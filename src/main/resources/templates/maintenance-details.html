@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maintenance Details - Car Maintenance App</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+      .header {
+        background-color: #333;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+      .user-info span {
+        margin-right: 15px;
+      }
+      .logout-btn {
+        background-color: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .logout-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .page-title {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .section {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+      }
+      .section-title {
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      .car-info {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      .car-info h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 18px;
+      }
+      .car-detail {
+        display: flex;
+        margin-bottom: 8px;
+      }
+      .car-detail-label {
+        font-weight: bold;
+        width: 140px;
+        flex-shrink: 0;
+      }
+      .maintenance-detail {
+        display: flex;
+        margin-bottom: 12px;
+        align-items: top;
+      }
+      .maintenance-label {
+        font-weight: bold;
+        width: 140px;
+        flex-shrink: 0;
+      }
+      .maintenance-value {
+        flex-grow: 1;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .btn-primary {
+        background-color: #4caf50;
+        color: white;
+      }
+      .btn-secondary {
+        background-color: #f5f5f5;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+      .btn-danger {
+        background-color: #f44336;
+        color: white;
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Car Maintenance App</h1>
+      <div class="user-info">
+        <span sec:authentication="name">Username</span>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2 class="page-title">Maintenance Details</h2>
+
+      <!-- Car Info Summary -->
+      <div class="section">
+        <h3 class="section-title">Car Information</h3>
+        <div class="car-info">
+          <div class="car-detail">
+            <div class="car-detail-label">Make & Model:</div>
+            <div th:text="${car.make + ' ' + car.model}">Toyota Corolla</div>
+          </div>
+          <div class="car-detail">
+            <div class="car-detail-label">Year:</div>
+            <div th:text="${car.year}">2020</div>
+          </div>
+          <div class="car-detail">
+            <div class="car-detail-label">License Plate:</div>
+            <div th:text="${car.licensePlate}">ABC-123</div>
+          </div>
+          <div class="car-detail">
+            <div class="car-detail-label">Current Mileage:</div>
+            <div><span th:text="${car.mileage}">50000</span> km</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maintenance Details -->
+      <div class="section">
+        <h3 class="section-title">Maintenance Record</h3>
+
+        <div class="maintenance-detail">
+          <div class="maintenance-label">Date:</div>
+          <div
+            class="maintenance-value"
+            th:text="${#temporals.format(maintenance.maintenanceDate, 'dd/MM/yyyy')}"
+          >
+            01/01/2023
+          </div>
+        </div>
+
+        <div class="maintenance-detail">
+          <div class="maintenance-label">Mileage:</div>
+          <div class="maintenance-value">
+            <span th:text="${maintenance.mileage}">60000</span> km
+          </div>
+        </div>
+
+        <div class="maintenance-detail">
+          <div class="maintenance-label">Description:</div>
+          <div class="maintenance-value" th:text="${maintenance.description}">
+            Brake replacement
+          </div>
+        </div>
+
+        <div class="maintenance-detail">
+          <div class="maintenance-label">Performed By:</div>
+          <div
+            class="maintenance-value"
+            th:text="${maintenance.performedBy != null ? maintenance.performedBy : '-'}"
+          >
+            Dealership
+          </div>
+        </div>
+
+        <div class="maintenance-detail">
+          <div class="maintenance-label">Cost:</div>
+          <div
+            class="maintenance-value"
+            th:text="${maintenance.cost != null ? '$' + #numbers.formatDecimal(maintenance.cost, 1, 2) : '-'}"
+          >
+            $200.00
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div>
+          <a
+            th:href="@{/cars/record/{id}(id=${car.id})}"
+            class="btn btn-secondary"
+          >
+            <i class="fas fa-arrow-left"></i> Back to Car Record
+          </a>
+        </div>
+        <div>
+          <a
+            th:href="@{/maintenances/edit/{id}(id=${maintenance.id})}"
+            class="btn btn-primary"
+          >
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <form
+            th:action="@{/maintenances/delete/{id}(id=${maintenance.id})}"
+            method="post"
+            style="display: inline-block"
+            onsubmit="return confirm('Are you sure you want to delete this maintenance record?')"
+          >
+            <button type="submit" class="btn btn-danger">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

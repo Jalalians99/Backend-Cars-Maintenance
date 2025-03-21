@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Maintenance Record | Car Maintenance Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        color: #212529;
+      }
+
+      .navbar {
+        background-color: #343a40;
+      }
+
+      .navbar-brand {
+        font-weight: bold;
+        color: #ffffff;
+      }
+
+      .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+
+      .btn-primary:hover {
+        background-color: #0069d9;
+        border-color: #0062cc;
+      }
+
+      .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      /* Admin impersonation banner */
+      .admin-banner {
+        background-color: #ffeeba;
+        color: #856404;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ffeeba;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-banner i {
+        margin-right: 8px;
+        font-size: 20px;
+      }
+
+      .admin-banner .btn {
+        background-color: #856404;
+        color: white;
+        border: none;
+      }
+
+      .admin-banner .btn:hover {
+        background-color: #755804;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/cars">Car Maintenance Tracker</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/cars">My Cars</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/cars/add">Add New Car</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="fas fa-user-circle"></i>
+                <span th:text="${#authentication.name}"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <form th:action="@{/logout}" method="post">
+                    <button class="dropdown-item" type="submit">
+                      <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <!-- Admin impersonation banner -->
+      <div
+        th:if="${isAdmin != null && isAdmin && impersonatedUser != null}"
+        class="admin-banner"
+      >
+        <div>
+          <i class="fas fa-user-secret"></i>
+          <strong>Admin mode:</strong> You are currently impersonating user
+          <span
+            th:text="${impersonatedUser.username}"
+            class="font-weight-bold"
+          ></span>
+        </div>
+        <a href="/admin/users" class="btn"> Exit Impersonation </a>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Add Maintenance Record</h5>
+              <span
+                th:text="${car.make + ' ' + car.model + ' (' + car.licensePlate + ')'}"
+                class="badge bg-secondary"
+              ></span>
+            </div>
+            <div class="card-body">
+              <form
+                th:action="@{/cars/{carId}/maintenance/add(carId=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                th:object="${maintenance}"
+                method="post"
+              >
+                <div class="mb-3">
+                  <label for="maintenanceDate" class="form-label"
+                    >Maintenance Date</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="maintenanceDate"
+                    th:field="*{maintenanceDate}"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="mileage" class="form-label">Mileage</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="mileage"
+                    th:field="*{mileage}"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label"
+                    >Description</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    th:field="*{description}"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="performedBy" class="form-label"
+                    >Performed By</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="performedBy"
+                    th:field="*{performedBy}"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="cost" class="form-label">Cost</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="cost"
+                      th:field="*{cost}"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <a
+                    th:href="@{/cars/{id}/record(id=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                    class="btn btn-secondary"
+                  >
+                    <i class="fas fa-arrow-left"></i> Back
+                  </a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Record
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

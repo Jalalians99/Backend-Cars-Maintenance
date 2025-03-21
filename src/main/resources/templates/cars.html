@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cars - Car Maintenance App</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+      .header {
+        background-color: #212529;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 5px 15px;
+        border-radius: 5px;
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+      }
+      .user-info span {
+        margin-right: 15px;
+        color: #f8f9fa;
+        font-weight: 500;
+      }
+      .logout-btn {
+        background-color: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .logout-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .container {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .page-title {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .car-list {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .car-list th,
+      .car-list td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      .car-list th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      .car-list tr:hover {
+        background-color: #f9f9f9;
+      }
+      .empty-message {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .btn-primary {
+        background-color: #4caf50;
+        color: white;
+      }
+      .btn-secondary {
+        background-color: #2196f3;
+        color: white;
+      }
+      .btn-danger {
+        background-color: #f44336;
+        color: white;
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+      }
+      .actions {
+        margin-top: 30px;
+        text-align: center;
+      }
+      .nav-links {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .nav-links a {
+        color: #2196f3;
+        text-decoration: none;
+        margin: 0 10px;
+      }
+      .nav-links a:hover {
+        text-decoration: underline;
+      }
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        width: 400px;
+      }
+      .modal-title {
+        margin-top: 0;
+        color: #333;
+      }
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        gap: 10px;
+      }
+      /* Admin impersonation banner */
+      .admin-banner {
+        background-color: #ffeeba;
+        color: #856404;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ffeeba;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-banner i {
+        margin-right: 8px;
+        font-size: 20px;
+      }
+
+      .admin-banner .btn {
+        background-color: #856404;
+        color: white;
+        border: none;
+      }
+
+      .admin-banner .btn:hover {
+        background-color: #755804;
+      }
+
+      /* Search styles */
+      .search-container {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .search-form .input-group {
+        max-width: 100%;
+      }
+      .search-results {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      @media (max-width: 576px) {
+        .search-form .input-group {
+          flex-direction: column;
+        }
+        .search-form .input-group > * {
+          margin-bottom: 5px;
+          width: 100%;
+        }
+      }
+      /* Navbar improvements */
+      .navbar {
+        padding: 0;
+        margin-top: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .navbar .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0 20px;
+        background-color: transparent;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .navbar .nav-link {
+        padding: 15px 15px;
+        font-weight: 500;
+        transition: background-color 0.2s, color 0.2s;
+      }
+      .navbar .nav-link:hover,
+      .navbar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      .navbar .dropdown-menu {
+        margin-top: 0;
+        border-radius: 0 0 5px 5px;
+        border-top: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Car Maintenance App</h1>
+      <div class="user-info">
+        <span sec:authentication="name">Username</span>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item" sec:authorize="!hasRole('ADMIN')">
+              <a class="nav-link active" href="/cars">My Cars</a>
+            </li>
+            <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
+              <a
+                class="nav-link dropdown-toggle active"
+                href="#"
+                id="adminDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Admin
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                <li>
+                  <a class="dropdown-item" href="/admin/users"
+                    >User Management</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Admin impersonation banner -->
+      <div
+        th:if="${isAdmin != null && isAdmin && impersonatedUser != null}"
+        class="admin-banner"
+      >
+        <div>
+          <i class="fas fa-user-secret"></i>
+          <strong>Admin mode:</strong> You are currently impersonating user
+          <span
+            th:text="${impersonatedUser.username}"
+            class="font-weight-bold"
+          ></span>
+        </div>
+        <a href="/admin/users" class="btn"> Exit Impersonation </a>
+      </div>
+
+      <h2 class="page-title">Your Cars</h2>
+
+      <!-- Search Form -->
+      <div class="search-container mb-4">
+        <form th:action="@{/cars/search}" method="get" class="search-form">
+          <div class="input-group">
+            <input
+              type="text"
+              name="searchTerm"
+              th:value="${searchTerm}"
+              class="form-control"
+              placeholder="Search by make, model, year, license plate or car type..."
+            />
+            <input
+              type="hidden"
+              name="impersonatedUserId"
+              th:if="${impersonatedUserId != null}"
+              th:value="${impersonatedUserId}"
+            />
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-search"></i> Search
+            </button>
+            <a th:href="@{/cars/all}" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Clear
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Search Results -->
+      <div
+        th:if="${searchTerm != null && !searchTerm.empty}"
+        class="alert alert-info mb-4"
+      >
+        <span th:if="${!#lists.isEmpty(cars)}">
+          Found <span th:text="${#lists.size(cars)}"></span> result(s) for:
+          <strong th:text="${searchTerm}"></strong>
+        </span>
+        <span th:if="${#lists.isEmpty(cars)}">
+          No cars found matching: <strong th:text="${searchTerm}"></strong>
+        </span>
+      </div>
+
+      <div th:if="${#lists.isEmpty(cars)}" class="empty-message">
+        <p>You don't have any cars registered yet.</p>
+        <p>Add your first car to start managing maintenance records.</p>
+      </div>
+
+      <table th:if="${not #lists.isEmpty(cars)}" class="car-list">
+        <thead>
+          <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>License Plate</th>
+            <th>Sub Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="car : ${cars}">
+            <td th:text="${car.make}">Toyota</td>
+            <td th:text="${car.model}">Corolla</td>
+            <td th:text="${car.year}">2020</td>
+            <td th:text="${car.licensePlate}">ABC-123</td>
+            <td th:text="${car.subType}">Sedan</td>
+            <td class="action-buttons">
+              <a
+                th:href="@{/cars/record/{id}(id=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                class="btn btn-primary"
+              >
+                <i class="fas fa-history"></i> Show Record
+              </a>
+              <a
+                th:href="@{/cars/oil-change/{id}(id=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-oil-can"></i> Oil Change
+              </a>
+              <a
+                th:href="@{/cars/maintenance/{id}(id=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-tools"></i> Maintenance
+              </a>
+              <a
+                th:href="@{/cars/edit/{id}(id=${car.id}, impersonatedUserId=${impersonatedUserId})}"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              <button
+                class="btn btn-danger"
+                onclick="openDeleteModal(this)"
+                th:data-car-id="${car.id}"
+                th:data-car-name="${car.make + ' ' + car.model}"
+              >
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <a th:href="@{/cars/add}" class="btn btn-primary">Add New Car</a>
+      </div>
+
+      <div class="nav-links">
+        <a th:href="@{/dashboard}">Back to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete <span id="carName"></span>?</p>
+        <div class="modal-actions">
+          <form id="deleteForm" method="post" action="">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <input
+              type="hidden"
+              name="impersonatedUserId"
+              th:if="${impersonatedUserId != null}"
+              th:value="${impersonatedUserId}"
+            />
+            <button
+              type="button"
+              class="cancel-btn"
+              onclick="closeDeleteModal()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="confirm-btn">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function openDeleteModal(button) {
+        const carId = button.getAttribute("data-car-id");
+        const carName = button.getAttribute("data-car-name");
+
+        document.getElementById("carName").innerText = carName;
+
+        // Include impersonatedUserId in the URL if it exists
+        let deleteUrl = "/cars/delete/" + carId;
+        const impersonatedUserId = document.querySelector(
+          'input[name="impersonatedUserId"]'
+        )?.value;
+        if (impersonatedUserId) {
+          deleteUrl += "?impersonatedUserId=" + impersonatedUserId;
+        }
+
+        document.getElementById("deleteForm").action = deleteUrl;
+        document.getElementById("deleteModal").style.display = "block";
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+
+      // Close modal if clicked outside of it
+      window.onclick = function (event) {
+        var modal = document.getElementById("deleteModal");
+        if (event.target == modal) {
+          closeDeleteModal();
+        }
+      };
+    </script>
+  </body>
+</html>

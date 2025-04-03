@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -46,6 +47,7 @@ public class RecordController {
     
     // Show car records (both maintenance and oil changes)
     @GetMapping("/cars/record/{id}")
+    @Transactional
     public String showCarRecord(@PathVariable Long id, Model model,
                               @AuthenticationPrincipal UserDetails userDetails,
                               @RequestParam(required = false) Long impersonatedUserId,
@@ -98,6 +100,7 @@ public class RecordController {
     
     // Show form to add oil change
     @GetMapping("/cars/oil-change/{id}")
+    @Transactional
     public String showAddOilChangeForm(@PathVariable Long id, Model model,
                                      @AuthenticationPrincipal UserDetails userDetails,
                                      @RequestParam(required = false) Long impersonatedUserId) {
@@ -139,6 +142,7 @@ public class RecordController {
     
     // Process oil change form submission
     @PostMapping("/cars/oil-change/{id}")
+    @Transactional
     public String addOilChange(@PathVariable Long id,
                              @RequestParam String changeDate,
                              @RequestParam int mileage,
@@ -202,6 +206,7 @@ public class RecordController {
     
     // Show form to add maintenance
     @GetMapping("/cars/maintenance/{id}")
+    @Transactional
     public String showAddMaintenanceForm(@PathVariable Long id, Model model,
                                        @AuthenticationPrincipal UserDetails userDetails,
                                        @RequestParam(required = false) Long impersonatedUserId) {
@@ -243,6 +248,7 @@ public class RecordController {
     
     // Process maintenance form submission
     @PostMapping("/cars/maintenance/{id}")
+    @Transactional
     public String addMaintenance(@PathVariable Long id,
                                @RequestParam String maintenanceDate,
                                @RequestParam(required = false) Integer mileage,

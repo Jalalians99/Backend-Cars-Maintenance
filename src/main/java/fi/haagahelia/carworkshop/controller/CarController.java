@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -59,6 +60,7 @@ public class CarController {
     }
     
     @GetMapping("/cars/all")
+    @Transactional
     public String userCars(Model model, @AuthenticationPrincipal UserDetails userDetails,
                           @RequestParam(required = false) Long impersonatedUserId,
                           HttpSession session) {
@@ -177,6 +179,7 @@ public class CarController {
     }
     
     @GetMapping("/cars/edit/{id}")
+    @Transactional
     public String showEditCarForm(@PathVariable Long id, Model model, 
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 @RequestParam(required = false) Long impersonatedUserId,
@@ -223,6 +226,7 @@ public class CarController {
     }
     
     @PostMapping("/cars/edit/{id}")
+    @Transactional
     public String updateCar(@PathVariable Long id,
                            @RequestParam String make,
                            @RequestParam String model,
@@ -303,6 +307,7 @@ public class CarController {
     }
     
     @PostMapping("/cars/delete/{id}")
+    @Transactional
     public String deleteCar(@PathVariable Long id, 
                           @AuthenticationPrincipal UserDetails userDetails,
                           @RequestParam(required = false) Long impersonatedUserId,

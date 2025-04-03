@@ -30,7 +30,7 @@ public class OilChange {
     @Column(name = "filter_changed")
     private Boolean filterChanged;
     
-    @Column(name = "notes")
+    @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
     
     @ManyToOne

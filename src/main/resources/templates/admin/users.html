@@ -250,9 +250,8 @@
             <form
               id="deleteUserForm"
               method="post"
-              th:action="@{/admin/users/delete}"
+              th:action="@{/admin/users/delete/{id}(id=${userIdToDelete})}"
             >
-              <input type="hidden" name="userId" id="userIdToDelete" />
               <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
               <button type="submit" class="btn btn-danger">Delete User</button>
             </form>
@@ -267,7 +266,10 @@
         const userId = button.getAttribute("data-user-id");
         const userName = button.getAttribute("data-user-name");
 
-        document.getElementById("userIdToDelete").value = userId;
+        // Set the form action with the user ID
+        document.getElementById(
+          "deleteUserForm"
+        ).action = `/admin/users/delete/${userId}`;
         document.getElementById("userNameToDelete").textContent = userName;
 
         const deleteModal = new bootstrap.Modal(

@@ -24,7 +24,7 @@ public class DataLoader implements CommandLineRunner {
             // Create admin user
             User adminUser = new User();
             adminUser.setUsername("admin");
-            adminUser.setPassword(passwordEncoder.encode("thisisadminpassword"));
+            adminUser.setPassword(passwordEncoder.encode("Punjabians99"));
             adminUser.setFirstName("Admin");
             adminUser.setLastName("User");
             adminUser.setEmail("admin@carworkshop.com");

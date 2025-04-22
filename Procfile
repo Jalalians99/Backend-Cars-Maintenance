@@ -1,0 +1,1 @@
+web: java -Dspring.profiles.active=password-update -jar target/carworkshop-0.0.1-SNAPSHOT.jar 
